@@ -2,7 +2,7 @@ let allFlags = [];
 let currentQuestion = 1;
 let lives = 3;
 let score = 0;
-let displayScore = 0; // Untuk animasi skor
+let displayScore = 0; 
 let correctCountry = {};
 let selectedRegion = "";
 let streak = 0;
@@ -15,16 +15,16 @@ const sndWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/2569/256
 const sndClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
 const sndVictory = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
 
-// Fungsi pembantu untuk audio supaya tidak sangkut
 function playSound(audio) {
     audio.pause();
     audio.currentTime = 0;
     audio.play();
 }
 
-// Animasi skor berjalan
 function updateScoreDisplay() {
     const scoreElement = document.getElementById('current-score-big');
+    if (!scoreElement) return; // Elak error jika ID tak jumpa
+    
     const interval = setInterval(() => {
         if (displayScore < score) {
             displayScore++;
@@ -35,13 +35,14 @@ function updateScoreDisplay() {
         } else {
             clearInterval(interval);
         }
-    }, 30); // Kelajuan animasi
+    }, 30);
 }
 
 window.onload = loadWelcomeRanking;
 
 async function loadWelcomeRanking() {
     const list = document.getElementById('welcome-ranking-list');
+    if (!list) return;
     try {
         const res = await fetch(G_SHEET_URL);
         const top5 = await res.json();
@@ -58,14 +59,20 @@ async function startGame(region) {
     playSound(sndClick);
     selectedRegion = region.toUpperCase();
     currentQuestion = 1; lives = 3; score = 0; displayScore = 0; streak = 0;
+    
     document.getElementById('welcome-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
+    
     try {
         const response = await fetch(`https://restcountries.com/v3.1/region/${region}`);
         const data = await response.json();
         allFlags = data.sort((a, b) => b.population - a.population);
         renderQuestion();
-    } catch (e) { location.reload(); }
+    } catch (e) { 
+        console.error("Error loading flags:", e);
+        alert("Gagal memuatkan data bendera. Sila cuba lagi.");
+        location.reload(); 
+    }
 }
 
 function renderQuestion() {
@@ -73,19 +80,25 @@ function renderQuestion() {
     if (lives <= 0) return;
     
     document.getElementById('options-container').style.pointerEvents = 'auto';
-    document.getElementById('current-level').innerText = currentQuestion;
-    updateScoreDisplay(); // Guna animasi
-    document.getElementById('lives').innerText = "❤️".repeat(lives);
-    document.getElementById('display-region').innerText = selectedRegion;
     
-    // Update status butang powerup
-    document.getElementById('btn-5050').disabled = score < 15;
-    document.getElementById('btn-skip').disabled = score < 25;
+    // SYNC ID DENGAN HTML BARU
+    const lvlEl = document.getElementById('current-level');
+    const livesEl = document.getElementById('lives');
+    
+    if (lvlEl) lvlEl.innerText = currentQuestion;
+    if (livesEl) livesEl.innerText = "❤️".repeat(lives);
+    
+    updateScoreDisplay(); 
+    
+    const b50 = document.getElementById('btn-5050');
+    const bSkip = document.getElementById('btn-skip');
+    if (b50) b50.disabled = score < 15;
+    if (bSkip) bSkip.disabled = score < 25;
     
     correctCountry = allFlags[currentQuestion - 1];
     document.getElementById('flag-img').src = correctCountry.flags.png;
     
-    // Pre-fetch bendera seterusnya
+    // Pre-fetch
     if (currentQuestion < allFlags.length) {
         const nextFlag = new Image();
         nextFlag.src = allFlags[currentQuestion].flags.png;
@@ -117,7 +130,7 @@ function checkAnswer(selected, btn) {
         playSound(sndCorrect); 
         score += 10; currentQuestion++; streak++;
         btn.style.background = "#2ecc71";
-        btn.style.boxShadow = "0 2px 0 #27ae60"; // Kesan ditekan
+        btn.style.boxShadow = "0 2px 0 #27ae60"; 
         btn.style.transform = "translateY(4px)";
         showToast("BETUL! 🎉", "correct");
         setTimeout(renderQuestion, 1200);
@@ -188,6 +201,7 @@ function confirmHome() { if(confirm("Menu Utama?")) location.reload(); }
 
 function showToast(msg, type) {
     const t = document.getElementById('message-toast');
+    if (!t) return;
     t.innerText = msg; t.className = `toast ${type}`;
     t.classList.remove('hidden'); 
     setTimeout(() => t.classList.add('hidden'), 1500);

@@ -9,42 +9,31 @@
 <body>
 
     <div id="welcome-screen" class="screen">
-        <div class="welcome-content-wrapper">
-            <div class="welcome-header-area">
-                <h1 class="logo">ALHUFFAZ</h1>
-                <div class="ranking-container">
-                    <h3 class="ranking-title">TOP RANKING</h3>
-                    <div id="welcome-ranking-list" class="ranking-list">
-                        <p>Memuatkan ranking...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="welcome-action-area">
-                <div class="region-grid">
-                    <button onclick="startGame('asia')">ASIA 🏮</button>
-                    <button onclick="startGame('europe')">EROPAH 🏰</button>
-                    <button onclick="startGame('africa')">AFRIKA 🦁</button>
-                    <button onclick="startGame('americas')">AMERIKA 🤠</button>
-                </div>
-                <button class="gallery-btn" onclick="window.location.href='gallery.html'">🏅 GALERI PENCAPAIAN</button>
-            </div>
+        <h1 class="logo">ALHUFFAZ</h1>
+        <div class="ranking-container">
+            <h3 class="ranking-title">TOP RANKING</h3>
+            <div id="welcome-ranking-list" class="ranking-list"></div>
         </div>
+        <div class="region-grid">
+            <button onclick="startGame('asia')">ASIA 🏮</button>
+            <button onclick="startGame('europe')">EROPAH 🏰</button>
+            <button onclick="startGame('africa')">AFRIKA 🦁</button>
+            <button onclick="startGame('americas')">AMERIKA 🤠</button>
+        </div>
+        <button class="gallery-btn" onclick="window.location.href='gallery.html'">🏅 GALERI PENCAPAIAN</button>
     </div>
 
     <div id="game-screen" class="screen hidden">
         <div class="gameplay-wrapper">
+            <div class="game-header">
+                <div id="lives" class="stats">❤️❤️❤️</div>
+                <div class="stats">LEVEL: <span id="current-level">1</span></div>
+                <button class="mini-home-btn" onclick="confirmHome()">🏠 MENU</button>
+            </div>
+
+            <div id="current-score-big">0</div>
+
             <div class="left-side">
-                <div class="game-header">
-                    <div class="stats">
-                        <span id="display-region">ASIA</span> | 
-                        LVL: <span id="current-level">1</span>
-                    </div>
-                    <div id="lives">❤️❤️❤️</div>
-                </div>
-                
-                <div id="current-score-big">0</div>
-                
                 <div class="flag-container">
                     <img id="flag-img" src="" alt="Bendera">
                     <div id="message-toast" class="toast hidden"></div>
