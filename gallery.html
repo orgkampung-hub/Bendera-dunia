@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALHUFFAZ - Dewan Kemasyhuran</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="gallery.css">
+    <style>
+        /* Tambahan gaya untuk senarai nama pemenang */
+        .winner-list {
+            margin-top: 10px;
+            padding: 5px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-size: 0.65rem;
+            max-height: 80px;
+            overflow-y: auto;
+            color: #FFEB3B;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .winner-name {
+            display: block;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 2px 0;
+        }
+        .no-winner { color: #888; font-style: italic; }
+        .trophy-card { 
+            height: auto; 
+            min-height: 250px; 
+            opacity: 1 !important; 
+            filter: none !important; 
+            background: rgba(255,255,255,0.05);
+        }
+        .trophy-card.has-winners {
+            border: 2px solid #FFEB3B;
+            background: rgba(255, 235, 59, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="gallery-screen">
+        <header class="gallery-header">
+            <h1 class="logo-mini">ALHUFFAZ</h1>
+            <h2 style="color: #FFEB3B;">DEWAN KEMASYHURAN</h2>
+            <p style="font-size: 0.8rem; color: #ccc;">Senarai Jaguh Dunia mengikut kategori trofi</p>
+        </header>
+
+        <div id="trophy-grid" class="trophy-grid">
+            </div>
+
+        <div class="gallery-footer" style="margin-top: 30px;">
+            <button class="back-home" onclick="window.location.href='index.html'">KEMBALI KE MENU</button>
+        </div>
+    </div>
+
+    <script src="gallery.js"></script>
+</body>
+</html>

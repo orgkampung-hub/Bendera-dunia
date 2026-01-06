@@ -1,74 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHUFFAZ Flag Game</title>
+    <title>ALHUFFAZ - Flag Master</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="welcome-screen" class="screen">
-        <h1 class="logo">ALHUFFAZ</h1>
-        <p class="subtitle">Jom Kenali Bendera Dunia!</p>
-        
-        <div class="main-layout">
-            <div class="menu-box">
-                <p>Pilih Benua:</p>
-                <div class="continent-buttons">
-                    <button onclick="startGame('asia')">ASIA</button>
-                    <button onclick="startGame('europe')">EUROPE</button>
-                    <button onclick="startGame('africa')">AFRICA</button>
-                    <button onclick="startGame('americas')">AMERICAS</button>
+        <div class="welcome-content-wrapper">
+            <div class="welcome-header-area">
+                <h1 class="logo">ALHUFFAZ</h1>
+                <div class="ranking-container">
+                    <h3 class="ranking-title">TOP RANKING</h3>
+                    <div id="welcome-ranking-list" class="ranking-list">
+                        <p>Memuatkan ranking...</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="ranking-box-mini">
-                <h3>🏆 TOP 5 GLOBAL</h3>
-                <div id="welcome-ranking-list">
-                    <p style="text-align:center">Memuatkan ranking...</p>
+            <div class="welcome-action-area">
+                <div class="region-grid">
+                    <button onclick="startGame('asia')">ASIA 🏮</button>
+                    <button onclick="startGame('europe')">EROPAH 🏰</button>
+                    <button onclick="startGame('africa')">AFRIKA 🦁</button>
+                    <button onclick="startGame('americas')">AMERIKA 🤠</button>
                 </div>
+                <button class="gallery-btn" onclick="window.location.href='gallery.html'">🏅 GALERI PENCAPAIAN</button>
             </div>
         </div>
     </div>
 
     <div id="game-screen" class="screen hidden">
-        <div class="header-container">
-            <div class="stats-bar">
-                <button class="home-btn" onclick="confirmHome()">🏠</button>
-                <div class="stat">SKOR: <span id="current-score">0</span></div>
-                <div class="stat">NYAWA: <span id="lives">❤️❤️❤️</span></div>
-                <div class="stat">Q: <span id="q-number">1</span>/<span id="q-total">0</span></div>
+        <div class="gameplay-wrapper">
+            <div class="left-side">
+                <div class="game-header">
+                    <div class="stats">
+                        <span id="display-region">ASIA</span> | 
+                        LVL: <span id="current-level">1</span>
+                    </div>
+                    <div id="lives">❤️❤️❤️</div>
+                </div>
+                
+                <div id="current-score-big">0</div>
+                
+                <div class="flag-container">
+                    <img id="flag-img" src="" alt="Bendera">
+                    <div id="message-toast" class="toast hidden"></div>
+                </div>
             </div>
-            
-            <div class="powerups-top-bar">
-                <button class="pwr-btn" id="btn-5050" onclick="use5050()">
-                    ✂️ 50/50 <small>(-15 pts)</small>
-                </button>
-                <button class="pwr-btn" id="btn-skip" onclick="useSkip()">
-                    ⏭️ SKIP <small>(-25 pts)</small>
-                </button>
-            </div>
-        </div>
-        
-        <div class="game-layout">
-            <div id="flag-container">
-                <img id="flag-img" src="" alt="Flag">
-            </div>
-            
-            <div class="game-controls">
+
+            <div class="right-side">
                 <div id="options-container" class="options-grid"></div>
+                <div class="powerups-wrapper">
+                    <div class="powerups">
+                        <button id="btn-5050" onclick="use5050()">⚡ 50:50 (-15)</button>
+                        <button id="btn-skip" onclick="useSkip()">⏭️ SKIP (-25)</button>
+                    </div>
+                </div>
+                <button class="home-btn" onclick="confirmHome()">🏠 MENU UTAMA</button>
             </div>
-        </div>
-
-        <div id="message-toast" class="toast hidden"></div>
-    </div>
-
-    <div id="leaderboard-modal" class="screen hidden" style="background: rgba(0,0,0,0.85); position: fixed; z-index: 2000;">
-        <div class="menu-box ranking-box">
-            <h2 id="final-status" style="color: #FFEB3B; margin-bottom: 15px;">🏆 TOP 5 TERBAIK</h2>
-            <div id="ranking-list" style="text-align: left; margin-bottom: 20px; color: white; line-height: 1.8;"></div>
-            <button onclick="location.reload()" style="background: #f44336; border-bottom: 4px solid #b71c1c; color: white;">TUTUP</button>
         </div>
     </div>
 
