@@ -3,7 +3,12 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-ozjZ9uz-k9ERJipqW
 function loadPersonalStats() {
     const lastScore = localStorage.getItem('lastScore') || 0;
     const lastLevel = localStorage.getItem('lastLevel') || '-';
-    const earnedBadges = (localStorage.getItem('lastBadges') || "").split(",");
+    
+    // Ambil data, pecahkan jadi array, dan buang ruang kosong/string kosong
+    const rawBadges = localStorage.getItem('lastBadges') || "";
+    const earnedBadges = rawBadges.split(",")
+                                  .map(b => b.trim())
+                                  .filter(b => b !== "");
 
     if(document.getElementById('lastScore')) document.getElementById('lastScore').textContent = lastScore;
     if(document.getElementById('lastLevel')) document.getElementById('lastLevel').textContent = lastLevel;
@@ -12,8 +17,13 @@ function loadPersonalStats() {
     const badgeCards = document.querySelectorAll('.badge-card');
     badgeCards.forEach(card => {
         const badgeId = card.getAttribute('data-id');
+        
+        // Check kalau badgeId wujud dalam senarai yang kita simpan
         if (earnedBadges.includes(badgeId)) {
             card.classList.remove('lock');
+        } else {
+            // Pastikan dia kekal lock kalau belum ada
+            card.classList.add('lock');
         }
     });
 }
@@ -35,6 +45,7 @@ async function fetchLeaderboard() {
     // PAPAR TOP 10 SAHAJA
     data.slice(0, 10).forEach((row, index) => {
       const tr = document.createElement('tr');
+      // Format badges dari Sheets untuk paparan table
       const badgeList = row.badges ? row.badges.split(',').join(', ') : 'Tiada Lencana';
       
       tr.innerHTML = `

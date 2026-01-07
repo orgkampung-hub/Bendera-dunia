@@ -142,12 +142,22 @@ function usePowerUp(type) {
 }
 
 function saveToSheet() {
+  // Syarat Economist
   if (powerUpsUsed === 0 && score >= 20 && !badgesEarned.includes("Economist")) {
     badgesEarned.push("Economist");
   }
+
+  // LOGIK SIMPAN PERMANENT: Ambil yang lama, gabung dengan yang baru dapat
+  let existingBadgesRaw = localStorage.getItem('lastBadges') || "";
+  let existingArray = existingBadgesRaw ? existingBadgesRaw.split(",") : [];
+  
+  // Gabung dan buang duplicate guna Set
+  let allBadges = [...new Set([...existingArray, ...badgesEarned])];
+  
   localStorage.setItem('lastScore', score);
   localStorage.setItem('lastLevel', updateLevelUI(currentQuestion));
-  localStorage.setItem('lastBadges', badgesEarned.join(","));
+  localStorage.setItem('lastBadges', allBadges.join(","));
+  
   location.href = "gameover.html";
 }
 
