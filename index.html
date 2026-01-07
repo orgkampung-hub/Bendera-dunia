@@ -1,58 +1,172 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHUFFAZ - Flag Master</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAME BENDERA</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    
+    body {
+      margin: 0;
+      background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('flags.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .menu-container {
+      width: min(100%, 500px);
+      background: rgba(0, 0, 0, 0.75);
+      padding: 25px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      text-align: center;
+      display: grid;
+      /* Susunan Portrait: Tajuk -> Butang -> Top 5 -> Footer */
+      grid-template-areas: 
+        "title"
+        "buttons"
+        "leaderboard"
+        "footer";
+      gap: 15px;
+    }
+
+    h1 { 
+      grid-area: title;
+      color: #f1c40f; 
+      margin: 0; 
+      letter-spacing: 3px; 
+      font-size: 2rem;
+    }
+
+    .button-group {
+      grid-area: buttons;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .main-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .play-btn { background: #2ecc71; color: white; box-shadow: 0 5px 0 #27ae60; }
+    .achieve-btn { background: #f1c40f; color: black; box-shadow: 0 5px 0 #d4ac0d; }
+    .main-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+
+    .mini-lb {
+      grid-area: leaderboard;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .mini-lb h3 { 
+      margin: 0 0 10px 0; 
+      font-size: 0.8rem; 
+      color: #f1c40f; 
+      text-transform: uppercase;
+    }
+
+    .lb-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+    }
+
+    .lb-row:last-child { border-bottom: none; }
+    
+    .footnote {
+      grid-area: footer;
+      margin-top: 5px;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 1px;
+    }
+
+    /* --- LANDSCAPE MODE SETTINGS --- */
+    @media (orientation: landscape) {
+      .menu-container {
+        width: min(95%, 700px);
+        grid-template-areas: 
+          "title title"
+          "leaderboard buttons"
+          "footer footer";
+        grid-template-columns: 1.2fr 1fr;
+        gap: 20px;
+        align-items: start;
+      }
+
+      .mini-lb { text-align: left; }
+      .button-group { justify-content: center; height: 100%; }
+      .main-btn { padding: 12px; font-size: 1rem; }
+    }
+  </style>
 </head>
 <body>
 
-    <div id="welcome-screen" class="screen">
-        <h1 class="logo">ALHUFFAZ</h1>
-        <div class="ranking-container">
-            <h3 class="ranking-title">TOP RANKING</h3>
-            <div id="welcome-ranking-list" class="ranking-list"></div>
-        </div>
-        <div class="region-grid">
-            <button onclick="startGame('asia')">ASIA 🏮</button>
-            <button onclick="startGame('europe')">EROPAH 🏰</button>
-            <button onclick="startGame('africa')">AFRIKA 🦁</button>
-            <button onclick="startGame('americas')">AMERIKA 🤠</button>
-        </div>
-        <button class="gallery-btn" onclick="window.location.href='gallery.html'">🏅 GALERI PENCAPAIAN</button>
+<div class="menu-container">
+  <h1>GAME BENDERA</h1>
+  
+  <div class="button-group">
+    <button class="main-btn play-btn" onclick="location.href='game.html'">PLAY</button>
+    <button class="main-btn achieve-btn" onclick="location.href='achieve.html'">ACHIEVEMENTS</button>
+  </div>
+
+  <div class="mini-lb">
+    <h3>🏆 Top 5 Global</h3>
+    <div id="miniLbBody">
+      <div style="font-size: 0.7rem; color: #bdc3c7;">Loading leaderboard...</div>
     </div>
+  </div>
 
-    <div id="game-screen" class="screen hidden">
-        <div class="gameplay-wrapper">
-            <div class="game-header">
-                <div id="lives" class="stats">❤️❤️❤️</div>
-                <div class="stats">LEVEL: <span id="current-level">1</span></div>
-                <button class="mini-home-btn" onclick="confirmHome()">🏠 MENU</button>
-            </div>
+  <div class="footnote">made by akulas * v1.0.0</div>
+</div>
 
-            <div id="current-score-big">0</div>
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-ozjZ9uz-k9ERJipqW0K3J5_aBjvqEZAr45m9IBnOyN7CYlLAOT71foBwFIIyp64b/exec";
 
-            <div class="left-side">
-                <div class="flag-container">
-                    <img id="flag-img" src="" alt="Bendera">
-                    <div id="message-toast" class="toast hidden"></div>
-                </div>
-            </div>
+  async function loadTop5() {
+    const container = document.getElementById('miniLbBody');
+    try {
+      const response = await fetch(SCRIPT_URL);
+      const data = await response.json();
+      
+      data.sort((a, b) => b.score - a.score);
+      
+      container.innerHTML = "";
+      data.slice(0, 5).forEach((player, index) => {
+        container.innerHTML += `
+          <div class="lb-row">
+            <span><b style="color:#f1c40f">#${index+1}</b> ${player.name}</span>
+            <span style="font-weight:bold">${player.score}</span>
+          </div>`;
+      });
+      
+      if(data.length === 0) container.innerHTML = "No records yet.";
+    } catch (e) {
+      container.innerHTML = "Offline";
+    }
+  }
+  window.onload = loadTop5;
+</script>
 
-            <div class="right-side">
-                <div id="options-container" class="options-grid"></div>
-                <div class="powerups-wrapper">
-                    <div class="powerups">
-                        <button id="btn-5050" onclick="use5050()">⚡ 50:50 (-15)</button>
-                        <button id="btn-skip" onclick="useSkip()">⏭️ SKIP (-25)</button>
-                    </div>
-                </div>
-                <button class="home-btn" onclick="confirmHome()">🏠 MENU UTAMA</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
 </body>
 </html>

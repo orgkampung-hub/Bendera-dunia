@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAME BENDERA</title>
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+
+<div class="game-container">
+  <div class="header">
+    <div class="header-left">
+      <span id="livesEmojis">❤️❤️❤️</span>
+      <span class="lvl-info">#<span id="qNum">1</span> <span id="levelName">Easy</span></span>
+    </div>
+
+    <div class="header-center">
+      <span class="score-label">SCORE</span>
+      <span id="scoreText" class="score-val">0</span>
+    </div>
+
+    <div class="header-right">
+      <button onclick="location.href='index.html'" class="home-btn">🏠</button>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <div class="flag-section">
+      <div class="flag-box" id="flagBox">
+        <img id="flagImg" src="" alt="Flag">
+        <div id="toast" class="toast"></div>
+      </div>
+      
+      <div class="powerups">
+        <button class="pu-btn" onclick="usePowerUp('5050')">50:50</button>
+        <button class="pu-btn" onclick="usePowerUp('skip')">SKIP</button>
+      </div>
+    </div>
+
+    <div class="answers-grid" id="answersGrid"></div>
+  </div>
+
+  <div class="footnote">made by akulas</div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

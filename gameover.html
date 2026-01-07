@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAME OVER - GAME BENDERA</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    
+    body {
+      margin: 0;
+      /* UPDATE: Menggunakan gameover.jpg dengan overlay gelap */
+      background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('gameover.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .result-card {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 40px 30px;
+      border-radius: 25px;
+      width: min(100%, 400px);
+      text-align: center;
+      border: 2px solid #f1c40f;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h1 { color: #f1c40f; margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
+    .final-score { font-size: 4.5rem; font-weight: 800; color: #fff; margin: 5px 0; }
+    .level-badge { background: #3498db; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+    
+    .badge-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 25px 0;
+      min-height: 40px;
+    }
+
+    /* POLISH: Animasi Pop-In untuk Lencana */
+    .b-tag {
+      background: rgba(241, 196, 15, 0.15);
+      color: #f1c40f;
+      border: 1px solid #f1c40f;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      opacity: 0;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      80% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* POLISH: Auto-Uppercase untuk Input */
+    input#playerName {
+      width: 100%;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      color: white;
+      font-size: 1.1rem;
+      text-align: center;
+      margin-bottom: 20px;
+      outline: none;
+      text-transform: uppercase; /* Nama sentiasa nampak huruf besar */
+    }
+
+    input#playerName::placeholder { text-transform: none; color: rgba(255,255,255,0.4); }
+    input#playerName:focus { border-color: #f1c40f; background: rgba(255,255,255,0.15); }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #27ae60;
+      transition: 0.2s;
+    }
+
+    .btn-submit:active { transform: translateY(3px); box-shadow: 0 2px 0 #27ae60; }
+    .btn-submit:disabled { background: #7f8c8d; box-shadow: none; cursor: not-allowed; }
+
+    .made-by { margin-top: 25px; font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+
+<div class="result-card">
+  <h1>PERMAINAN TAMAT</h1>
+  <div class="final-score" id="s">0</div>
+  <span class="level-badge" id="l">-</span>
+
+  <div class="badge-container" id="bc"></div>
+
+  <input type="text" id="playerName" placeholder="MASUKKAN NAMA ANDA" maxlength="15">
+  <button onclick="save()" id="b" class="btn-submit">SIMPAN REKOD</button>
+  
+  <div class="made-by">made by akulas</div>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-ozjZ9uz-k9ERJipqW0K3J5_aBjvqEZAr45m9IBnOyN7CYlLAOT71foBwFIIyp64b/exec";
+  
+  const score = localStorage.getItem('lastScore') || 0;
+  const level = localStorage.getItem('lastLevel') || 'Easy';
+  const badges = localStorage.getItem('lastBadges') || '';
+
+  document.getElementById('s').textContent = score;
+  document.getElementById('l').textContent = level;
+
+  if(badges) {
+    const bList = badges.split(',');
+    const container = document.getElementById('bc');
+    container.innerHTML = "";
+    
+    // Memberi delay sedikit pada setiap lencana supaya efek pop-in nampak satu per satu
+    bList.forEach((badgeName, index) => {
+      const span = document.createElement('span');
+      span.className = 'b-tag';
+      span.style.animationDelay = (index * 0.1) + "s";
+      span.textContent = "🏆 " + badgeName.trim();
+      container.appendChild(span);
+    });
+  }
+
+  async function save() {
+    const inputName = document.getElementById('playerName').value.trim();
+    const name = inputName.toUpperCase() || "PEMAIN MISTERI";
+    const btn = document.getElementById('b');
+    
+    btn.disabled = true;
+    btn.textContent = "SEDANG MENYIMPAN...";
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({ name, score, level, badges })
+      });
+      localStorage.removeItem('lastScore');
+      localStorage.removeItem('lastLevel');
+      localStorage.removeItem('lastBadges');
+      location.href = 'index.html';
+    } catch (e) {
+      location.href = 'index.html';
+    }
+  }
+</script>
+</body>
+</html>
