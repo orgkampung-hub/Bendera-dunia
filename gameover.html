@@ -5,15 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GAME OVER - GAME BENDERA</title>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
     body {
       margin: 0;
-      /* UPDATE: Menggunakan gameover.jpg dengan overlay gelap */
-      background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('gameover.jpg');
+      background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('flags.jpg');
       background-size: cover;
       background-position: center;
-      background-attachment: fixed;
       color: white;
       display: flex;
       justify-content: center;
@@ -21,26 +18,18 @@
       min-height: 100vh;
       padding: 20px;
     }
-
     .result-card {
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.8);
       padding: 40px 30px;
       border-radius: 25px;
       width: min(100%, 400px);
       text-align: center;
       border: 2px solid #f1c40f;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       backdrop-filter: blur(10px);
-      animation: slideUp 0.6s ease-out;
     }
-
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
     h1 { color: #f1c40f; margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
-    .final-score { font-size: 4.5rem; font-weight: 800; color: #fff; margin: 5px 0; }
+    .final-score { font-size: 4rem; font-weight: 800; color: #fff; margin: 10px 0; }
     .level-badge { background: #3498db; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
     
     .badge-container {
@@ -51,27 +40,16 @@
       margin: 25px 0;
       min-height: 40px;
     }
-
-    /* POLISH: Animasi Pop-In untuk Lencana */
     .b-tag {
       background: rgba(241, 196, 15, 0.15);
       color: #f1c40f;
       border: 1px solid #f1c40f;
-      padding: 6px 12px;
+      padding: 4px 10px;
       border-radius: 8px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: bold;
-      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-      opacity: 0;
     }
 
-    @keyframes popIn {
-      0% { transform: scale(0); opacity: 0; }
-      80% { transform: scale(1.1); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* POLISH: Auto-Uppercase untuk Input */
     input#playerName {
       width: 100%;
       padding: 15px;
@@ -79,14 +57,11 @@
       border: 1px solid rgba(255,255,255,0.2);
       border-radius: 12px;
       color: white;
-      font-size: 1.1rem;
+      font-size: 1rem;
       text-align: center;
       margin-bottom: 20px;
       outline: none;
-      text-transform: uppercase; /* Nama sentiasa nampak huruf besar */
     }
-
-    input#playerName::placeholder { text-transform: none; color: rgba(255,255,255,0.4); }
     input#playerName:focus { border-color: #f1c40f; background: rgba(255,255,255,0.15); }
 
     .btn-submit {
@@ -102,11 +77,10 @@
       box-shadow: 0 5px 0 #27ae60;
       transition: 0.2s;
     }
-
     .btn-submit:active { transform: translateY(3px); box-shadow: 0 2px 0 #27ae60; }
     .btn-submit:disabled { background: #7f8c8d; box-shadow: none; cursor: not-allowed; }
 
-    .made-by { margin-top: 25px; font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 1px; }
+    .made-by { margin-top: 25px; font-size: 0.6rem; color: rgba(255,255,255,0.3); letter-spacing: 1px; }
   </style>
 </head>
 <body>
@@ -125,50 +99,62 @@
 </div>
 
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-ozjZ9uz-k9ERJipqW0K3J5_aBjvqEZAr45m9IBnOyN7CYlLAOT71foBwFIIyp64b/exec";
+  // URL BARU V1.0.1 - Dah disahkan berfungsi
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRn-tXv1AmOeXuKnjxuqmtPdG0prMgzw2fPAa8IhLHz6glzpIdtN2tToB0TOs4Wz_V/exec";
   
+  // Ambil data dari permainan sebelum ini
   const score = localStorage.getItem('lastScore') || 0;
   const level = localStorage.getItem('lastLevel') || 'Easy';
   const badges = localStorage.getItem('lastBadges') || '';
 
+  // Papar data pada skrin
   document.getElementById('s').textContent = score;
   document.getElementById('l').textContent = level;
 
+  // Papar lencana yang berjaya di-unlock pusingan ini
   if(badges) {
-    const bList = badges.split(',');
-    const container = document.getElementById('bc');
-    container.innerHTML = "";
-    
-    // Memberi delay sedikit pada setiap lencana supaya efek pop-in nampak satu per satu
-    bList.forEach((badgeName, index) => {
-      const span = document.createElement('span');
-      span.className = 'b-tag';
-      span.style.animationDelay = (index * 0.1) + "s";
-      span.textContent = "🏆 " + badgeName.trim();
-      container.appendChild(span);
-    });
+    document.getElementById('bc').innerHTML = badges.split(',')
+      .map(b => b.trim())
+      .filter(b => b !== "")
+      .map(b => `<span class="b-tag">⭐ ${b}</span>`)
+      .join('');
   }
 
   async function save() {
-    const inputName = document.getElementById('playerName').value.trim();
-    const name = inputName.toUpperCase() || "PEMAIN MISTERI";
+    const nameInput = document.getElementById('playerName').value.trim();
+    const name = nameInput || "Pemain Misteri";
     const btn = document.getElementById('b');
     
+    // Elakkan double click
     btn.disabled = true;
     btn.textContent = "SEDANG MENYIMPAN...";
 
+    // Data yang dihantar ke Google Sheets
+    const dataToSend = { 
+      nama: name, 
+      skor: score, 
+      level: level, 
+      badges: badges 
+    };
+
     try {
+      // Hantar data ke Google Apps Script
       await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
-        body: JSON.stringify({ name, score, level, badges })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend)
       });
-      localStorage.removeItem('lastScore');
-      localStorage.removeItem('lastLevel');
-      localStorage.removeItem('lastBadges');
-      location.href = 'index.html';
+      
+      // Beri masa sikit untuk server proses (1.5 saat)
+      setTimeout(() => {
+        location.href = 'hall.html';
+      }, 1500);
+
     } catch (e) {
-      location.href = 'index.html';
+      console.error("Gagal simpan:", e);
+      // Kalau error pun, hantar ke hall.html supaya pemain tak sangkut
+      location.href = 'hall.html';
     }
   }
 </script>

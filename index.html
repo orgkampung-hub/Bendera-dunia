@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GAME BENDERA</title>
+  <title>GAME BENDERA - v1.0.1</title>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
     
     body {
       margin: 0;
@@ -30,7 +30,6 @@
       backdrop-filter: blur(8px);
       text-align: center;
       display: grid;
-      /* Susunan Portrait: Tajuk -> Butang -> Top 5 -> Footer */
       grid-template-areas: 
         "title"
         "buttons"
@@ -63,6 +62,8 @@
       font-weight: bold;
       cursor: pointer;
       transition: 0.2s;
+      text-decoration: none;
+      display: block;
     }
 
     .play-btn { background: #2ecc71; color: white; box-shadow: 0 5px 0 #27ae60; }
@@ -101,7 +102,6 @@
       letter-spacing: 1px;
     }
 
-    /* --- LANDSCAPE MODE SETTINGS --- */
     @media (orientation: landscape) {
       .menu-container {
         width: min(95%, 700px);
@@ -113,7 +113,6 @@
         gap: 20px;
         align-items: start;
       }
-
       .mini-lb { text-align: left; }
       .button-group { justify-content: center; height: 100%; }
       .main-btn { padding: 12px; font-size: 1rem; }
@@ -127,7 +126,7 @@
   
   <div class="button-group">
     <button class="main-btn play-btn" onclick="location.href='game.html'">PLAY</button>
-    <button class="main-btn achieve-btn" onclick="location.href='achieve.html'">ACHIEVEMENTS</button>
+    <button class="main-btn achieve-btn" onclick="location.href='hall.html'">HALL OF FAME</button>
   </div>
 
   <div class="mini-lb">
@@ -137,11 +136,12 @@
     </div>
   </div>
 
-  <div class="footnote">made by akulas * v1.0.0</div>
+  <div class="footnote">made by akulas • v1.0.1</div>
 </div>
 
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-ozjZ9uz-k9ERJipqW0K3J5_aBjvqEZAr45m9IBnOyN7CYlLAOT71foBwFIIyp64b/exec";
+  // URL BARU V1.0.1
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRn-tXv1AmOeXuKnjxuqmtPdG0prMgzw2fPAa8IhLHz6glzpIdtN2tToB0TOs4Wz_V/exec";
 
   async function loadTop5() {
     const container = document.getElementById('miniLbBody');
@@ -149,20 +149,24 @@
       const response = await fetch(SCRIPT_URL);
       const data = await response.json();
       
-      data.sort((a, b) => b.score - a.score);
+      // Susun ikut skor tertinggi (menggunakan kunci nama/skor yang fleksibel)
+      const cleanData = data.map(r => ({
+        n: r.nama || r.Nama || r.name || "Pemain",
+        s: parseInt(r.skor || r.Skor || r.score || 0)
+      })).sort((a, b) => b.s - a.s);
       
       container.innerHTML = "";
-      data.slice(0, 5).forEach((player, index) => {
+      cleanData.slice(0, 5).forEach((player, index) => {
         container.innerHTML += `
           <div class="lb-row">
-            <span><b style="color:#f1c40f">#${index+1}</b> ${player.name}</span>
-            <span style="font-weight:bold">${player.score}</span>
+            <span><b style="color:#f1c40f">#${index+1}</b> ${player.n}</span>
+            <span style="font-weight:bold; color:#2ecc71">${player.s}</span>
           </div>`;
       });
       
-      if(data.length === 0) container.innerHTML = "No records yet.";
+      if(cleanData.length === 0) container.innerHTML = "No records yet.";
     } catch (e) {
-      container.innerHTML = "Offline";
+      container.innerHTML = "<div style='color:#e74c3c; font-size:0.7rem;'>Offline Mode</div>";
     }
   }
   window.onload = loadTop5;

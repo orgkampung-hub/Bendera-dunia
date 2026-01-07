@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hall of Fame - Bendera Dunia</title>
+  <link rel="stylesheet" href="hall.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="personal-best">
+    <div class="stat-box">
+      <span class="label">LAST SCORE</span>
+      <span id="lastScore" class="val">0</span>
+    </div>
+    <div class="stat-box">
+      <span class="label">LAST LEVEL</span>
+      <span id="lastLevel" class="val">-</span>
+    </div>
+  </div>
+
+  <h2>🏅 My Achievements</h2>
+  <div class="badge-grid">
+    <div class="badge-card lock" data-id="First Step">
+      <span class="badge-icon">🎯</span>
+      <b>First Step</b>
+      <span>Misi: Jawab 1 betul</span>
+    </div>
+    <div class="badge-card lock" data-id="Double Digit">
+      <span class="badge-icon">🔟</span>
+      <b>Double Digit</b>
+      <span>Misi: Capai skor 10</span>
+    </div>
+    <div class="badge-card lock" data-id="Sharpshooter">
+      <span class="badge-icon">🔥</span>
+      <b>Sharpshooter</b>
+      <span>Misi: 10 betul berturut</span>
+    </div>
+    <div class="badge-card lock" data-id="Survivor">
+      <span class="badge-icon">🛡️</span>
+      <b>Survivor</b>
+      <span>Misi: Lvl 1 No Damage</span>
+    </div>
+    <div class="badge-card lock" data-id="Halfway Hero">
+      <span class="badge-icon">🥈</span>
+      <b>Halfway Hero</b>
+      <span>Misi: Capai skor 100</span>
+    </div>
+    <div class="badge-card lock" data-id="Economist">
+      <span class="badge-icon">💰</span>
+      <b>Economist</b>
+      <span>Misi: 50 skor no help</span>
+    </div>
+    <div class="badge-card lock" data-id="Comeback King">
+      <span class="badge-icon">⚡</span>
+      <b>Comeback King</b>
+      <span>Misi: 150 skor (1 HP)</span>
+    </div>
+    <div class="badge-card lock" data-id="Centurion">
+      <span class="badge-icon">🏅</span>
+      <b>Centurion</b>
+      <span>Misi: Capai skor 150</span>
+    </div>
+    <div class="badge-card lock" data-id="The Legend">
+      <span class="badge-icon">👑</span>
+      <b>The Legend</b>
+      <span>Misi: Level Legend</span>
+    </div>
+    <div class="badge-card lock" data-id="Conqueror">
+      <span class="badge-icon">🏆</span>
+      <b>Conqueror</b>
+      <span>Misi: Skor 200 (MAX)</span>
+    </div>
+  </div>
+
+  <h2>🏆 Global Ranking</h2>
+  <div id="loader">Menghubungi database...</div>
+  <div class="table-container">
+    <table id="lbTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>RANK</th>
+          <th>PLAYER</th>
+          <th style="text-align:right">SCORE</th>
+        </tr>
+      </thead>
+      <tbody id="lbBody"></tbody>
+    </table>
+  </div>
+
+  <a href="index.html" class="btn-back">KEMBALI KE MENU</a>
+  <div class="v-tag">v1.0.1 • Stable Edition</div>
+</div>
+
+<script src="hall.js"></script>
+</body>
+</html>

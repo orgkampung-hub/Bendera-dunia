@@ -11,7 +11,8 @@ let powerUpsUsed = 0;
 let level1NoDamage = true;
 let badgesEarned = [];
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-ozjZ9uz-k9ERJipqW0K3J5_aBjvqEZAr45m9IBnOyN7CYlLAOT71foBwFIIyp64b/exec";
+// URL BARU YANG KAU BAGI TADI
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweleeocECQdZrPXFrQnkGuwszCOJHZd1u3U1DqsyhduDv7kQEo-dAj22CLCO26zXjd/exec";
 
 const sndCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
 const sndWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
@@ -19,7 +20,7 @@ const sndPowerUp = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2
 
 async function loadGame() {
   try {
-    // Tambah cca2 dalam fields untuk filter kod negara
+    // Tambah cca2 dalam fields untuk filter kod negara (PS & IL)
     const response = await fetch('https://restcountries.com/v3.1/all?fields=name,flags,population,unMember,cca2');
     const data = await response.json();
     
@@ -28,6 +29,7 @@ async function loadGame() {
       const isIsrael = (c.cca2 === 'IL');
       const isPalestine = (c.cca2 === 'PS');
       const isUnMember = c.unMember === true;
+      // Ambil jika (Ahli UN atau Palestin) DAN bukan Israel
       return (isUnMember || isPalestine) && !isIsrael;
     }).sort((a, b) => b.population - a.population);
     
@@ -196,7 +198,6 @@ function getCorrectCountry(qIndex) {
   if (qIndex < 40) return pools.level2[qIndex - 20];
   if (qIndex < 60) return pools.level3[qIndex - 40];
   let idx = qIndex - 60;
-  // Keselamatan jika idx melebihi panjang array
   return pools.legendary[idx] || pools.legendary[Math.floor(Math.random() * pools.legendary.length)];
 }
 

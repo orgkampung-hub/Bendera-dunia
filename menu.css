@@ -1,0 +1,140 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  /* background flags */
+  background: linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+              url('flags.jpg') center/cover no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+/* APP CONTAINER */
+.app {
+  width: min(92vw, 420px);
+  height: min(92vh, 640px);
+  background: rgba(0,0,0,.45);
+  border-radius: 22px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TITLE */
+.title {
+  text-align: center;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-shadow: 1px 1px 3px #000;
+}
+
+/* CONTENT */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* MENU */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+button {
+  width: 100%;
+  height: 52px;
+  font-size: 1.05rem;
+  border: none;
+  border-radius: 16px;
+  background: #1abc9c;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: 0.2s;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* LEADERBOARD */
+.leaderboard {
+  background: rgba(255,255,255,.08);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.leaderboard h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  text-align: center;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.leaderboard ol {
+  margin: 0;
+  padding-left: 20px;
+  font-size: .9rem;
+}
+
+.leaderboard li {
+  margin: 4px 0;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  font-size: .8rem;
+  opacity: .6;
+  margin-top: 8px;
+}
+
+/* ===== LANDSCAPE MODE UPDATED ===== */
+@media (orientation: landscape) {
+
+  .app {
+    /* Kita besarkan width dan height supaya nampak lebih penuh */
+    width: 95vw; 
+    height: 90vh;
+    max-width: 900px; /* Had lebih besar untuk tablet/laptop */
+    max-height: 500px;
+    padding: 20px 30px;
+  }
+
+  .content {
+    flex-direction: row;
+    gap: 30px;
+    align-items: center; /* Bagi menu & leaderboard center secara menegak */
+  }
+
+  .menu {
+    flex: 1; /* Guna flexbox untuk ambil ruang seimbang */
+    justify-content: center;
+  }
+
+  .leaderboard {
+    flex: 1; /* Guna flexbox untuk ambil ruang seimbang */
+    height: 100%; /* Bagi leaderboard sama tinggi dengan menu */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  button {
+    height: 60px; /* Butang lebih besar sikit dalam landscape */
+    font-size: 1.1rem;
+  }
+}
