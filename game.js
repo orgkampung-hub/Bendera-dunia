@@ -3,7 +3,7 @@ let currentQuestion = 0;
 let score = 0;
 let lives = 3;
 let currentCorrectCountry = null;
-const MAX_QUESTIONS = 200; // Had maksimum soalan
+const MAX_QUESTIONS = 200; 
 
 // Trackers Achievement
 let consecutiveCorrect = 0;
@@ -11,8 +11,7 @@ let powerUpsUsed = 0;
 let level1NoDamage = true;
 let badgesEarned = [];
 
-// URL BARU YANG KAU BAGI TADI
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweleeocECQdZrPXFrQnkGuwszCOJHZd1u3U1DqsyhduDv7kQEo-dAj22CLCO26zXjd/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRn-tXv1AmOeXuKnjxuqmtPdG0prMgzw2fPAa8IhLHz6glzpIdtN2tToB0TOs4Wz_V/exec";
 
 const sndCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
 const sndWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
@@ -20,16 +19,13 @@ const sndPowerUp = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2
 
 async function loadGame() {
   try {
-    // Tambah cca2 dalam fields untuk filter kod negara (PS & IL)
     const response = await fetch('https://restcountries.com/v3.1/all?fields=name,flags,population,unMember,cca2');
     const data = await response.json();
     
-    // FILTER: Masukkan Palestin (PS), buang Israel (IL)
     let sorted = data.filter(c => {
       const isIsrael = (c.cca2 === 'IL');
       const isPalestine = (c.cca2 === 'PS');
       const isUnMember = c.unMember === true;
-      // Ambil jika (Ahli UN atau Palestin) DAN bukan Israel
       return (isUnMember || isPalestine) && !isIsrael;
     }).sort((a, b) => b.population - a.population);
     
@@ -60,11 +56,13 @@ function updateLevelUI(qIndex) {
   let lvlText = "";
   if (qIndex < 20) { lvlText = "(Easy)"; lvlEl.style.color = "#2ecc71"; }
   else if (qIndex < 40) { 
+    // ACHIEVEMENT: Survivor (Lepas Lvl 1 tanpa hilang nyawa)
     if(level1NoDamage && !badgesEarned.includes("Survivor")) badgesEarned.push("Survivor");
     lvlText = "(Medium)"; lvlEl.style.color = "#f1c40f"; 
   }
   else if (qIndex < 60) { lvlText = "(Hard)"; lvlEl.style.color = "#e67e22"; }
   else { 
+    // ACHIEVEMENT: The Legend (Sampai level Legendary)
     if(!badgesEarned.includes("The Legend")) badgesEarned.push("The Legend");
     lvlText = "(Legendary)"; lvlEl.style.color = "#e74c3c"; 
   }
@@ -82,11 +80,19 @@ function checkAnswer(isCorrect, btn) {
     score += 1;
     consecutiveCorrect++;
     
-    if (consecutiveCorrect === 10 && !badgesEarned.includes("Sharpshooter")) badgesEarned.push("Sharpshooter");
-    if (consecutiveCorrect === 20 && !badgesEarned.includes("Perfect 20")) badgesEarned.push("Perfect 20");
-    if (lives === 1 && consecutiveCorrect === 5 && !badgesEarned.includes("Comeback King")) badgesEarned.push("Comeback King");
-    if (score === 50 && !badgesEarned.includes("World Traveler")) badgesEarned.push("World Traveler");
-    if (score === 100 && !badgesEarned.includes("Immortality")) badgesEarned.push("Immortality");
+    // --- CHECK ACHIEVEMENTS (NEW LOGIC) ---
+    if (score >= 1 && !badgesEarned.includes("First Step")) badgesEarned.push("First Step");
+    if (score >= 10 && !badgesEarned.includes("Double Digit")) badgesEarned.push("Double Digit");
+    if (consecutiveCorrect >= 10 && !badgesEarned.includes("Sharpshooter")) badgesEarned.push("Sharpshooter");
+    if (score >= 100 && !badgesEarned.includes("Halfway Hero")) badgesEarned.push("Halfway Hero");
+    if (score >= 150 && !badgesEarned.includes("Centurion")) badgesEarned.push("Centurion");
+    if (score >= 200 && !badgesEarned.includes("Conqueror")) badgesEarned.push("Conqueror");
+    
+    // ACHIEVEMENT: Economist (50 skor tanpa power-up)
+    if (score >= 50 && powerUpsUsed === 0 && !badgesEarned.includes("Economist")) badgesEarned.push("Economist");
+    
+    // ACHIEVEMENT: Comeback King (Skor 150 & nyawa tinggal 1)
+    if (score >= 150 && lives === 1 && !badgesEarned.includes("Comeback King")) badgesEarned.push("Comeback King");
 
     showToast("✅ BETUL!", "correct");
     
@@ -100,7 +106,7 @@ function checkAnswer(isCorrect, btn) {
     btn.classList.add('wrong-flash');
     sndWrong.play();
     lives--;
-    consecutiveCorrect = 0;
+    consecutiveCorrect = 0; // Reset streak
     if (currentQuestion < 20) level1NoDamage = false; 
     
     showToast(`❌ SALAH!<br><span style="font-size:0.7rem">Jawapan: ${currentCorrectCountry.name.common}</span>`, "wrong");
@@ -145,12 +151,11 @@ function usePowerUp(type) {
 }
 
 function saveToSheet() {
-  if (powerUpsUsed === 0 && score >= 20 && !badgesEarned.includes("Economist")) {
-    badgesEarned.push("Economist");
-  }
-
+  // Ambil badges lama dlm storage supaya tak hilang pencapaian lepas
   let existingBadgesRaw = localStorage.getItem('lastBadges') || "";
   let existingArray = existingBadgesRaw ? existingBadgesRaw.split(",") : [];
+  
+  // Gabungkan badges lama & baru, buang yang duplicate
   let allBadges = [...new Set([...existingArray, ...badgesEarned])];
   
   localStorage.setItem('lastScore', score);
@@ -161,7 +166,6 @@ function saveToSheet() {
 }
 
 function generateQuestion() {
-  // Tamat jika nyawa habis ATAU capai had 200 soalan
   if (lives <= 0 || currentQuestion >= MAX_QUESTIONS) {
     if (currentQuestion >= MAX_QUESTIONS) {
        showToast("🏆 TAHNIAH! ANDA TAMATKAN SEMUA SOALAN!", "correct");
