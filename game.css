@@ -6,10 +6,32 @@ body {
   background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('flags.jpg');
   background-size: cover; background-position: center; background-attachment: fixed;
   color: white; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden;
+  transition: background 0.2s; /* Untuk kesan flash merah */
 }
 
 .game-container {
   width: 100%; max-width: 500px; display: flex; flex-direction: column; padding: 10px; gap: 15px;
+}
+
+/* --- UPDATE V1.0.2: ANIMASI NYAWA HILANG --- */
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.shake-screen { animation: shake 0.4s; }
+
+.red-flash { 
+  background: linear-gradient(rgba(231, 76, 60, 0.6), rgba(231, 76, 60, 0.6)), url('flags.jpg') !important; 
 }
 
 /* --- HEADER: TOP MAX --- */
@@ -20,7 +42,7 @@ body {
 }
 
 .header-left { display: flex; align-items: center; gap: 8px; }
-#livesEmojis { font-size: 1rem; letter-spacing: -2px; }
+#livesEmojis { font-size: 1rem; letter-spacing: 2px; } /* Jarak sikit supaya nampak pop */
 .lvl-info { font-size: 0.85rem; color: #f1c40f; font-weight: bold; }
 
 .header-center { display: flex; flex-direction: column; align-items: center; }
@@ -33,7 +55,7 @@ body {
 }
 
 /* --- MAIN LAYOUT --- */
-.main-layout { display: flex; flex-direction: column; gap: 20px; align-items: center; } /* Center kan semua dlm portrait */
+.main-layout { display: flex; flex-direction: column; gap: 20px; align-items: center; } 
 
 .flag-section { display: flex; flex-direction: column; gap: 15px; width: 100%; }
 
@@ -75,7 +97,7 @@ body {
   display: flex; 
   flex-direction: column; 
   gap: 10px; 
-  width: min(100%, 320px); /* Selaraskan dengan lebar kotak bendera */
+  width: min(100%, 320px); 
   margin: 0 auto; 
 }
 

@@ -13,9 +13,11 @@ let badgesEarned = [];
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRn-tXv1AmOeXuKnjxuqmtPdG0prMgzw2fPAa8IhLHz6glzpIdtN2tToB0TOs4Wz_V/exec";
 
+// Audio
 const sndCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
 const sndWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 const sndPowerUp = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3');
+const sndLifeLost = new Audio('https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3'); // Bunyi impak/gasp
 
 async function loadGame() {
   try {
@@ -46,9 +48,26 @@ function updateUI() {
 
   const livesContainer = document.getElementById("livesEmojis");
   if(livesContainer) {
-    const heartEmoji = "❤️";
-    livesContainer.textContent = heartEmoji.repeat(Math.max(0, lives));
+    // Papar nyawa: ❤️ aktif, manakala yang hilang jadi malap
+    livesContainer.innerHTML = "";
+    for(let i=0; i<3; i++) {
+        const heart = document.createElement("span");
+        heart.textContent = "❤️";
+        heart.style.opacity = (i < lives) ? "1" : "0.2";
+        heart.style.transition = "0.3s";
+        livesContainer.appendChild(heart);
+    }
   }
+}
+
+// FUNGSI BARU: Efek Gegar & Merah
+function triggerDamageEffect() {
+  document.body.classList.add('shake-screen', 'red-flash');
+  sndLifeLost.play();
+  
+  setTimeout(() => {
+    document.body.classList.remove('shake-screen', 'red-flash');
+  }, 400);
 }
 
 function updateLevelUI(qIndex) {
@@ -56,13 +75,11 @@ function updateLevelUI(qIndex) {
   let lvlText = "";
   if (qIndex < 20) { lvlText = "(Easy)"; lvlEl.style.color = "#2ecc71"; }
   else if (qIndex < 40) { 
-    // ACHIEVEMENT: Survivor (Lepas Lvl 1 tanpa hilang nyawa)
     if(level1NoDamage && !badgesEarned.includes("Survivor")) badgesEarned.push("Survivor");
     lvlText = "(Medium)"; lvlEl.style.color = "#f1c40f"; 
   }
   else if (qIndex < 60) { lvlText = "(Hard)"; lvlEl.style.color = "#e67e22"; }
   else { 
-    // ACHIEVEMENT: The Legend (Sampai level Legendary)
     if(!badgesEarned.includes("The Legend")) badgesEarned.push("The Legend");
     lvlText = "(Legendary)"; lvlEl.style.color = "#e74c3c"; 
   }
@@ -80,18 +97,14 @@ function checkAnswer(isCorrect, btn) {
     score += 1;
     consecutiveCorrect++;
     
-    // --- CHECK ACHIEVEMENTS (NEW LOGIC) ---
+    // Check Achievements
     if (score >= 1 && !badgesEarned.includes("First Step")) badgesEarned.push("First Step");
     if (score >= 10 && !badgesEarned.includes("Double Digit")) badgesEarned.push("Double Digit");
     if (consecutiveCorrect >= 10 && !badgesEarned.includes("Sharpshooter")) badgesEarned.push("Sharpshooter");
     if (score >= 100 && !badgesEarned.includes("Halfway Hero")) badgesEarned.push("Halfway Hero");
     if (score >= 150 && !badgesEarned.includes("Centurion")) badgesEarned.push("Centurion");
     if (score >= 200 && !badgesEarned.includes("Conqueror")) badgesEarned.push("Conqueror");
-    
-    // ACHIEVEMENT: Economist (50 skor tanpa power-up)
     if (score >= 50 && powerUpsUsed === 0 && !badgesEarned.includes("Economist")) badgesEarned.push("Economist");
-    
-    // ACHIEVEMENT: Comeback King (Skor 150 & nyawa tinggal 1)
     if (score >= 150 && lives === 1 && !badgesEarned.includes("Comeback King")) badgesEarned.push("Comeback King");
 
     showToast("✅ BETUL!", "correct");
@@ -106,8 +119,11 @@ function checkAnswer(isCorrect, btn) {
     btn.classList.add('wrong-flash');
     sndWrong.play();
     lives--;
-    consecutiveCorrect = 0; // Reset streak
+    consecutiveCorrect = 0;
     if (currentQuestion < 20) level1NoDamage = false; 
+    
+    // Panggil efek visual & bunyi kerosakan
+    triggerDamageEffect();
     
     showToast(`❌ SALAH!<br><span style="font-size:0.7rem">Jawapan: ${currentCorrectCountry.name.common}</span>`, "wrong");
     
@@ -151,11 +167,8 @@ function usePowerUp(type) {
 }
 
 function saveToSheet() {
-  // Ambil badges lama dlm storage supaya tak hilang pencapaian lepas
   let existingBadgesRaw = localStorage.getItem('lastBadges') || "";
   let existingArray = existingBadgesRaw ? existingBadgesRaw.split(",") : [];
-  
-  // Gabungkan badges lama & baru, buang yang duplicate
   let allBadges = [...new Set([...existingArray, ...badgesEarned])];
   
   localStorage.setItem('lastScore', score);
