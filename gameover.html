@@ -99,19 +99,18 @@
 </div>
 
 <script>
-  // URL BARU V1.0.1 - Dah disahkan berfungsi
+  // URL BARU V1.0.1
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRn-tXv1AmOeXuKnjxuqmtPdG0prMgzw2fPAa8IhLHz6glzpIdtN2tToB0TOs4Wz_V/exec";
   
-  // Ambil data dari permainan sebelum ini
-  const score = localStorage.getItem('lastScore') || 0;
+  // Ambil data (Pastikan score adalah Number)
+  const lastScore = localStorage.getItem('lastScore') || 0;
   const level = localStorage.getItem('lastLevel') || 'Easy';
   const badges = localStorage.getItem('lastBadges') || '';
 
   // Papar data pada skrin
-  document.getElementById('s').textContent = score;
+  document.getElementById('s').textContent = lastScore;
   document.getElementById('l').textContent = level;
 
-  // Papar lencana yang berjaya di-unlock pusingan ini
   if(badges) {
     document.getElementById('bc').innerHTML = badges.split(',')
       .map(b => b.trim())
@@ -125,20 +124,20 @@
     const name = nameInput || "Pemain Misteri";
     const btn = document.getElementById('b');
     
-    // Elakkan double click
     btn.disabled = true;
     btn.textContent = "SEDANG MENYIMPAN...";
 
-    // Data yang dihantar ke Google Sheets
+    // Kita hantar pelbagai kunci (skor & score) dalam format Number
     const dataToSend = { 
-      nama: name, 
-      skor: score, 
+      nama: name,
+      name: name,
+      skor: Number(lastScore), 
+      score: Number(lastScore),
       level: level, 
       badges: badges 
     };
 
     try {
-      // Hantar data ke Google Apps Script
       await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -146,14 +145,13 @@
         body: JSON.stringify(dataToSend)
       });
       
-      // Beri masa sikit untuk server proses (1.5 saat)
+      // Tunggu 1.5 saat baru pindah ke hall.html
       setTimeout(() => {
         location.href = 'hall.html';
       }, 1500);
 
     } catch (e) {
       console.error("Gagal simpan:", e);
-      // Kalau error pun, hantar ke hall.html supaya pemain tak sangkut
       location.href = 'hall.html';
     }
   }
