@@ -3,6 +3,7 @@ let currentQuestion = 0;
 let score = 0;
 let lives = 3;
 let currentCorrectCountry = null;
+const MAX_QUESTIONS = 200; // Had maksimum soalan
 
 // Trackers Achievement
 let consecutiveCorrect = 0;
@@ -18,32 +19,33 @@ const sndPowerUp = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2
 
 async function loadGame() {
   try {
-    const response = await fetch('https://restcountries.com/v3.1/all?fields=name,flags,population,unMember');
+    // Tambah cca2 dalam fields untuk filter kod negara
+    const response = await fetch('https://restcountries.com/v3.1/all?fields=name,flags,population,unMember,cca2');
     const data = await response.json();
-    let sorted = data.filter(c => c.unMember === true).sort((a, b) => b.population - a.population);
+    
+    // FILTER: Masukkan Palestin (PS), buang Israel (IL)
+    let sorted = data.filter(c => {
+      const isIsrael = (c.cca2 === 'IL');
+      const isPalestine = (c.cca2 === 'PS');
+      const isUnMember = c.unMember === true;
+      return (isUnMember || isPalestine) && !isIsrael;
+    }).sort((a, b) => b.population - a.population);
     
     pools.level1 = sorted.slice(0, 20).sort(() => Math.random() - 0.5);
     pools.level2 = sorted.slice(20, 40).sort(() => Math.random() - 0.5);
     pools.level3 = sorted.slice(40, 60).sort(() => Math.random() - 0.5);
     pools.legendary = sorted.slice(60).sort(() => Math.random() - 0.5);
     
-    updateUI(); // Inisialisasi UI
+    updateUI(); 
     generateQuestion();
   } catch (error) { console.error("API Error", error); }
 }
 
-// FUNGSI UPDATE UI (Emoji ❤️ & Numbering Sebaris)
 function updateUI() {
-  // Update Score
   document.getElementById("scoreText").textContent = score;
-  
-  // Update Question Number
   document.getElementById("qNum").textContent = currentQuestion + 1;
-  
-  // Update Level
   updateLevelUI(currentQuestion);
 
-  // Update Lives Emoji (❤️❤️❤️)
   const livesContainer = document.getElementById("livesEmojis");
   if(livesContainer) {
     const heartEmoji = "❤️";
@@ -78,7 +80,6 @@ function checkAnswer(isCorrect, btn) {
     score += 1;
     consecutiveCorrect++;
     
-    // Achievement Logic
     if (consecutiveCorrect === 10 && !badgesEarned.includes("Sharpshooter")) badgesEarned.push("Sharpshooter");
     if (consecutiveCorrect === 20 && !badgesEarned.includes("Perfect 20")) badgesEarned.push("Perfect 20");
     if (lives === 1 && consecutiveCorrect === 5 && !badgesEarned.includes("Comeback King")) badgesEarned.push("Comeback King");
@@ -102,7 +103,7 @@ function checkAnswer(isCorrect, btn) {
     
     showToast(`❌ SALAH!<br><span style="font-size:0.7rem">Jawapan: ${currentCorrectCountry.name.common}</span>`, "wrong");
     
-    updateUI(); // Segera hilangkan emoji ❤️
+    updateUI(); 
 
     if (lives <= 0) {
       setTimeout(saveToSheet, 1200);
@@ -142,16 +143,12 @@ function usePowerUp(type) {
 }
 
 function saveToSheet() {
-  // Syarat Economist
   if (powerUpsUsed === 0 && score >= 20 && !badgesEarned.includes("Economist")) {
     badgesEarned.push("Economist");
   }
 
-  // LOGIK SIMPAN PERMANENT: Ambil yang lama, gabung dengan yang baru dapat
   let existingBadgesRaw = localStorage.getItem('lastBadges') || "";
   let existingArray = existingBadgesRaw ? existingBadgesRaw.split(",") : [];
-  
-  // Gabung dan buang duplicate guna Set
   let allBadges = [...new Set([...existingArray, ...badgesEarned])];
   
   localStorage.setItem('lastScore', score);
@@ -162,7 +159,14 @@ function saveToSheet() {
 }
 
 function generateQuestion() {
-  if (lives <= 0) return;
+  // Tamat jika nyawa habis ATAU capai had 200 soalan
+  if (lives <= 0 || currentQuestion >= MAX_QUESTIONS) {
+    if (currentQuestion >= MAX_QUESTIONS) {
+       showToast("🏆 TAHNIAH! ANDA TAMATKAN SEMUA SOALAN!", "correct");
+       setTimeout(saveToSheet, 2000);
+    }
+    return;
+  }
   
   currentCorrectCountry = getCorrectCountry(currentQuestion);
   let all = [...pools.level1, ...pools.level2, ...pools.level3, ...pools.legendary];
@@ -192,6 +196,7 @@ function getCorrectCountry(qIndex) {
   if (qIndex < 40) return pools.level2[qIndex - 20];
   if (qIndex < 60) return pools.level3[qIndex - 40];
   let idx = qIndex - 60;
+  // Keselamatan jika idx melebihi panjang array
   return pools.legendary[idx] || pools.legendary[Math.floor(Math.random() * pools.legendary.length)];
 }
 
